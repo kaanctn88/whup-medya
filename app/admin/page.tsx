@@ -297,7 +297,7 @@ export default function AdminPage() {
           <input
             type="password"
             className={`${inputCls} mt-5`}
-            placeholder="Şifre (varsayılan: whup2026)"
+            placeholder="Şifre"
             value={pw}
             onChange={(e) => setPw(e.target.value)}
           />
