@@ -111,6 +111,7 @@ export async function saveContent(data: SiteContent): Promise<void> {
       access: "public",
       contentType: "application/json",
       addRandomSuffix: false,
+      allowOverwrite: true,
     });
     return;
   }
