@@ -25,7 +25,11 @@ export async function POST(req: Request) {
     }
     await saveContent(data);
     return NextResponse.json({ ok: true });
-  } catch {
-    return NextResponse.json({ error: "Kaydedilemedi" }, { status: 500 });
+  } catch (e) {
+    console.error("content-save-error:", e);
+    return NextResponse.json(
+      { error: "Kaydedilemedi: " + (e as Error).message },
+      { status: 500 }
+    );
   }
 }
