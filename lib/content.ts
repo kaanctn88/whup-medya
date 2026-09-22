@@ -78,7 +78,10 @@ export type SiteContent = {
 
 const BLOB_KEY = "content/site.json";
 const contentFile = path.join(process.cwd(), "content", "site.json");
-const useBlob = () => !!process.env.BLOB_READ_WRITE_TOKEN;
+// Yeni Blob modelinde token yok: BLOB_STORE_ID + otomatik OIDC yeterli
+export const useBlobStorage = () =>
+  !!(process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID);
+const useBlob = useBlobStorage;
 
 async function getBlobJson(): Promise<SiteContent | null> {
   try {

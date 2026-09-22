@@ -3,7 +3,7 @@ import path from "path";
 import sharp from "sharp";
 import { put } from "@vercel/blob";
 import { NextResponse } from "next/server";
-import { checkAdmin } from "@/lib/content";
+import { checkAdmin, useBlobStorage } from "@/lib/content";
 
 const ALLOWED = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
 // Sitedeki en büyük kullanım (CTA bandı) 1600px — üstü otomatik küçültülür
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
             ? await resized.webp({ quality: 82 }).toBuffer()
             : await resized.jpeg({ quality: 82, mozjpeg: true }).toBuffer();
     }
-    if (process.env.BLOB_READ_WRITE_TOKEN) {
+    if (useBlobStorage()) {
       // Vercel'de dosya sistemi kalıcı değil — direkt Blob'a yaz
       const blob = await put(`uploads/${name}`, output, {
         access: "public",
