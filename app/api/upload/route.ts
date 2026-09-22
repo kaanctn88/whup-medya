@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import sharp from "sharp";
+import { put } from "@vercel/blob";
 import { NextResponse } from "next/server";
 import { checkAdmin } from "@/lib/content";
 
@@ -56,6 +57,14 @@ export async function POST(req: Request) {
           : ext === "webp"
             ? await resized.webp({ quality: 82 }).toBuffer()
             : await resized.jpeg({ quality: 82, mozjpeg: true }).toBuffer();
+    }
+    if (process.env.BLOB_READ_WRITE_TOKEN) {
+      // Vercel'de dosya sistemi kalıcı değil — direkt Blob'a yaz
+      const blob = await put(`uploads/${name}`, output, {
+        access: "public",
+        contentType: file.type,
+      });
+      return NextResponse.json({ url: blob.url });
     }
     fs.writeFileSync(path.join(process.cwd(), "public", "uploads", name), output);
     return NextResponse.json({ url: `/uploads/${name}` });

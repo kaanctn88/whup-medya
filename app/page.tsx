@@ -16,8 +16,8 @@ import { getContent } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
 
-export default function Home() {
-  const c = getContent();
+export default async function Home() {
+  const c = await getContent();
   return (
     <main>
       <Preloader />

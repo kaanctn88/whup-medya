@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { checkAdmin, getContent, saveContent } from "@/lib/content";
 
 export async function GET() {
-  return NextResponse.json(getContent());
+  return NextResponse.json(await getContent());
 }
 
 export async function POST(req: Request) {
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     if (!ok) {
       return NextResponse.json({ error: "Eksik bölüm var, kaydedilmedi" }, { status: 400 });
     }
-    saveContent(data);
+    await saveContent(data);
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "Kaydedilemedi" }, { status: 500 });

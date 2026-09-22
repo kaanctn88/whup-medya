@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { list, put } from "@vercel/blob";
 
 export type GeneralContent = {
   whatsapp: string;
@@ -75,15 +76,42 @@ export type SiteContent = {
   testimonials: TestimonialContent[];
 };
 
+const BLOB_KEY = "content/site.json";
 const contentFile = path.join(process.cwd(), "content", "site.json");
+const useBlob = () => !!process.env.BLOB_READ_WRITE_TOKEN;
 
-export function getContent(): SiteContent {
+async function getBlobJson(): Promise<SiteContent | null> {
+  try {
+    const { blobs } = await list({ prefix: BLOB_KEY, limit: 1 });
+    if (!blobs.length) return null;
+    const r = await fetch(blobs[0].url, { cache: "no-store" });
+    if (!r.ok) return null;
+    return (await r.json()) as SiteContent;
+  } catch {
+    return null;
+  }
+}
+
+export async function getContent(): Promise<SiteContent> {
+  if (useBlob()) {
+    const b = await getBlobJson();
+    if (b) return b;
+  }
   const raw = fs.readFileSync(contentFile, "utf-8");
   return JSON.parse(raw) as SiteContent;
 }
 
-export function saveContent(data: SiteContent): void {
-  fs.writeFileSync(contentFile, JSON.stringify(data, null, 2) + "\n", "utf-8");
+export async function saveContent(data: SiteContent): Promise<void> {
+  const body = JSON.stringify(data, null, 2);
+  if (useBlob()) {
+    await put(BLOB_KEY, body, {
+      access: "public",
+      contentType: "application/json",
+      addRandomSuffix: false,
+    });
+    return;
+  }
+  fs.writeFileSync(contentFile, body + "\n", "utf-8");
 }
 
 export function checkAdmin(req: Request): boolean {
