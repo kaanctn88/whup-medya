@@ -156,7 +156,7 @@ export default function Process() {
                       <b className="flex items-center gap-1.5 text-[14px]">
                         Whup Medya Kurucu Ekibi <BadgeCheck className="h-4 w-4 text-electric" />
                       </b>
-                      <small className="text-[12px] text-muted">Est. 2016 • İstanbul</small>
+                      <small className="text-[12px] text-muted">Eskişehir</small>
                     </span>
                     <span className="ml-auto hidden font-display text-5xl font-bold text-white/5 sm:block">
                       &rsquo;16
