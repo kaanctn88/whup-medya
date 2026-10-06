@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: "Whup Medya — Markanızı Dijitalin Zirvesine Taşıyoruz",
   description:
     "Whup Medya: Performans reklamları, viral video prodüksiyonu, marka & web deneyimi. Veri + Kreatif = Whup Etkisi.",
+  verification: {
+    google: "hqK6tCqqY1RE07lqpt6lLnSRJTofaEcwTAzHEHqnYMo",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
