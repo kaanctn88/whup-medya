@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { upload } from "@vercel/blob/client";
 import type { SiteContent } from "@/lib/content";
 
 const ICONS = [
@@ -180,20 +181,20 @@ function VideoField({
   onMsg: (m: string) => void;
 }) {
   const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState(0);
   async function pick(f: File | undefined) {
     if (!f) return;
     setBusy(true);
+    setProgress(0);
     try {
-      const fd = new FormData();
-      fd.append("file", f);
-      const r = await fetch("/api/upload", {
-        method: "POST",
-        headers: { "x-admin-key": adminKey },
-        body: fd,
+      // Video direkt tarayıcıdan Blob'a yüklenir (sunucu limitine takılmaz)
+      const blob = await upload(f.name, f, {
+        access: "public",
+        handleUploadUrl: "/api/video-upload",
+        clientPayload: JSON.stringify({ key: adminKey }),
+        onUploadProgress: ({ percentage }) => setProgress(Math.round(percentage)),
       });
-      const j = await r.json();
-      if (!r.ok) throw new Error(j.error || "Yüklenemedi");
-      onChange(j.url);
+      onChange(blob.url);
       onMsg("Video yüklendi.");
     } catch (e) {
       onMsg("Hata: " + (e as Error).message);
@@ -225,7 +226,7 @@ function VideoField({
           onChange={(e) => onChange(e.target.value)}
         />
         <label className="inline-flex cursor-pointer items-center gap-2 self-start rounded-xl border border-line px-4 py-2 text-[12.5px] font-bold transition hover:border-electric/60">
-          {busy ? "Yükleniyor..." : "Videoyu yükle (MP4/WebM, max 100MB)"}
+          {busy ? `Yükleniyor %{progress}...` : "Videoyu yükle (MP4/WebM, max 100MB)"}
           <input
             type="file"
             accept="video/mp4,video/webm"
