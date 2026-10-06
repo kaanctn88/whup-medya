@@ -222,7 +222,7 @@ function VideoField({
         <input
           className={inputCls}
           value={value}
-          placeholder="https://... veya /uploads/....mp4"
+          placeholder="MP4 linki veya YouTube linki (liste dışı da olur)"
           onChange={(e) => onChange(e.target.value)}
         />
         <label className="inline-flex cursor-pointer items-center gap-2 self-start rounded-xl border border-line px-4 py-2 text-[12.5px] font-bold transition hover:border-electric/60">
