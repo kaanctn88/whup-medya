@@ -109,8 +109,23 @@ export async function getContent(): Promise<SiteContent> {
   const local = JSON.parse(fs.readFileSync(contentFile, "utf-8")) as SiteContent;
   if (useBlobStorage()) {
     const b = await getBlobJson();
-    // Eski kayıtlarda promo olmayabilir — yerel varsayılanla birleştir
-    if (b) return { ...b, promo: { ...local.promo, ...((b as Partial<SiteContent>).promo || {}) } };
+    if (b) {
+      // Boş bırakılan alanlarda yerel varsayılan geçerli olur
+      const saved = b as Partial<SiteContent>;
+      const withFallback = <T extends object>(d: T, s?: Partial<T>): T => {
+        const out = { ...d, ...s };
+        (Object.keys(d) as (keyof T)[]).forEach((k) => {
+          if (out[k] === "") out[k] = d[k];
+        });
+        return out;
+      };
+      return {
+        ...b,
+        general: withFallback(local.general, saved.general),
+        hero: withFallback(local.hero, saved.hero),
+        promo: withFallback(local.promo, saved.promo),
+      };
+    }
   }
   return local;
 }
