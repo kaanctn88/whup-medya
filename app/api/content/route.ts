@@ -19,7 +19,8 @@ export async function POST(req: Request) {
       Array.isArray(data.logos) &&
       Array.isArray(data.services) &&
       Array.isArray(data.cases) &&
-      Array.isArray(data.testimonials);
+      Array.isArray(data.testimonials) &&
+      data.promo && typeof data.promo === "object";
     if (!ok) {
       return NextResponse.json({ error: "Eksik bölüm var, kaydedilmedi" }, { status: 400 });
     }

@@ -34,8 +34,15 @@
     "reelComments": "4.2K",
     "reelShares": "9.8K"
   },
-  "logos": [
-    "NOVA GAYRİMENKUL",
+  "promo": {
+    "eyebrow": "TANITIM FİLMİ",
+    "title": "Whup'u 60 saniyede",
+    "titleAccent": "tanıyın.",
+    "desc": "Set arkası görüntüler, kampanya sonuçları ve müşteri yorumları tek filmde.",
+    "video": "",
+    "poster": ""
+  },
+  "logos": [    "NOVA GAYRİMENKUL",
     "TURBO AUTO",
     "MODA NOVA",
     "ATLAS FİTNESS",

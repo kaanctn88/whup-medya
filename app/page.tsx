@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import LogoMarquee from "@/components/LogoMarquee";
+import PromoVideo from "@/components/PromoVideo";
 import Services from "@/components/Services";
 import Cases from "@/components/Cases";
 import Process from "@/components/Process";
@@ -23,6 +24,7 @@ export default async function Home() {
       <Navbar whatsapp={c.general.whatsapp} />
       <Hero content={c.hero} />
       <LogoMarquee logos={c.logos} />
+      <PromoVideo content={c.promo} />
       <Services items={c.services} />
       <Cases items={c.cases} />
       <Process />

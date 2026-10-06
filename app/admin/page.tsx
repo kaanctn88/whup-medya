@@ -24,7 +24,7 @@ const COLORS = [
   "from-emerald-400 to-teal-600",
 ];
 const CATS = ["performans", "prodüksiyon", "marka"];
-const TABS = ["İletişim Bilgileri", "Ana Sayfa İlk Bölüm", "Referanslarımız", "Hizmetler", "Başarı Hikayeleri", "Müşteri Yorumları"] as const;
+const TABS = ["İletişim Bilgileri", "Ana Sayfa İlk Bölüm", "Tanıtım Videosu", "Referanslarımız", "Hizmetler", "Başarı Hikayeleri", "Müşteri Yorumları"] as const;
 
 const inputCls =
   "w-full rounded-xl border border-line bg-base px-3.5 py-2.5 text-[13.5px] text-white outline-none transition focus:border-violet";
@@ -161,6 +161,79 @@ function ImageField({
             />
           </label>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function VideoField({
+  label,
+  value,
+  adminKey,
+  onChange,
+  onMsg,
+}: {
+  label: string;
+  value: string;
+  adminKey: string;
+  onChange: (v: string) => void;
+  onMsg: (m: string) => void;
+}) {
+  const [busy, setBusy] = useState(false);
+  async function pick(f: File | undefined) {
+    if (!f) return;
+    setBusy(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", f);
+      const r = await fetch("/api/upload", {
+        method: "POST",
+        headers: { "x-admin-key": adminKey },
+        body: fd,
+      });
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.error || "Yüklenemedi");
+      onChange(j.url);
+      onMsg("Video yüklendi.");
+    } catch (e) {
+      onMsg("Hata: " + (e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <div>
+      <span className={labelCls}>{label}</span>
+      {value ? (
+        <video
+          src={value}
+          controls
+          playsInline
+          preload="metadata"
+          className="mb-3 aspect-video w-full max-w-md rounded-xl border border-line bg-black"
+        />
+      ) : (
+        <p className="mb-3 rounded-xl border border-dashed border-line p-4 text-center text-[12.5px] text-muted">
+          Henüz video yok — yükleyince burada ve sitede görünür.
+        </p>
+      )}
+      <div className="flex flex-col gap-2">
+        <input
+          className={inputCls}
+          value={value}
+          placeholder="https://... veya /uploads/....mp4"
+          onChange={(e) => onChange(e.target.value)}
+        />
+        <label className="inline-flex cursor-pointer items-center gap-2 self-start rounded-xl border border-line px-4 py-2 text-[12.5px] font-bold transition hover:border-electric/60">
+          {busy ? "Yükleniyor..." : "Videoyu yükle (MP4/WebM, max 100MB)"}
+          <input
+            type="file"
+            accept="video/mp4,video/webm"
+            className="hidden"
+            disabled={busy}
+            onChange={(e) => pick(e.target.files?.[0])}
+          />
+        </label>
       </div>
     </div>
   );
@@ -418,6 +491,23 @@ export default function AdminPage() {
             <Field label="Beğeni (örn. 128K)" value={data.hero.reelLikes} onChange={(v) => set("hero", { ...data.hero, reelLikes: v })} />
             <Field label="Yorum (örn. 4.2K)" value={data.hero.reelComments} onChange={(v) => set("hero", { ...data.hero, reelComments: v })} />
             <Field label="Paylaşım (örn. 9.8K)" value={data.hero.reelShares} onChange={(v) => set("hero", { ...data.hero, reelShares: v })} />
+          </section>
+        )}
+
+        {tab === "Tanıtım Videosu" && (
+          <section className="grid gap-4 rounded-3xl border border-line bg-card p-6 md:grid-cols-2">
+            <Field label="Rozet" value={data.promo.eyebrow} onChange={(v) => set("promo", { ...data.promo, eyebrow: v })} />
+            <Field label="Başlık" value={data.promo.title} onChange={(v) => set("promo", { ...data.promo, title: v })} />
+            <Field label="Başlık vurgu (renkli)" value={data.promo.titleAccent} onChange={(v) => set("promo", { ...data.promo, titleAccent: v })} />
+            <div className="md:col-span-2">
+              <Field label="Açıklama" value={data.promo.desc} onChange={(v) => set("promo", { ...data.promo, desc: v })} />
+            </div>
+            <div className="md:col-span-2">
+              <VideoField label="Video dosyası" value={data.promo.video} adminKey={key} onMsg={setMsg} onChange={(v) => set("promo", { ...data.promo, video: v })} />
+            </div>
+            <div className="md:col-span-2">
+              <ImageField label="Ön kapak görseli (oynatmadan önce görünür)" value={data.promo.poster} adminKey={key} onMsg={setMsg} onChange={(v) => set("promo", { ...data.promo, poster: v })} />
+            </div>
           </section>
         )}
 

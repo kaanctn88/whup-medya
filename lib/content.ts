@@ -67,6 +67,15 @@ export type TestimonialContent = {
   color: string;
 };
 
+export type PromoContent = {
+  eyebrow: string;
+  title: string;
+  titleAccent: string;
+  desc: string;
+  video: string;
+  poster: string;
+};
+
 export type SiteContent = {
   general: GeneralContent;
   hero: HeroContent;
@@ -74,6 +83,7 @@ export type SiteContent = {
   services: ServiceContent[];
   cases: CaseContent[];
   testimonials: TestimonialContent[];
+  promo: PromoContent;
 };
 
 const BLOB_KEY = "content/site.json";
@@ -96,12 +106,13 @@ async function getBlobJson(): Promise<SiteContent | null> {
 }
 
 export async function getContent(): Promise<SiteContent> {
-  if (useBlob()) {
+  const local = JSON.parse(fs.readFileSync(contentFile, "utf-8")) as SiteContent;
+  if (useBlobStorage()) {
     const b = await getBlobJson();
-    if (b) return b;
+    // Eski kayıtlarda promo olmayabilir — yerel varsayılanla birleştir
+    if (b) return { ...b, promo: { ...local.promo, ...((b as Partial<SiteContent>).promo || {}) } };
   }
-  const raw = fs.readFileSync(contentFile, "utf-8");
-  return JSON.parse(raw) as SiteContent;
+  return local;
 }
 
 export async function saveContent(data: SiteContent): Promise<void> {

@@ -5,9 +5,18 @@ import { put } from "@vercel/blob";
 import { NextResponse } from "next/server";
 import { checkAdmin, useBlobStorage } from "@/lib/content";
 
-const ALLOWED = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+const ALLOWED = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "video/mp4",
+  "video/webm",
+]);
 // Sitedeki en büyük kullanım (CTA bandı) 1600px — üstü otomatik küçültülür
 const MAX_DIM = 1600;
+const MAX_IMAGE = 5 * 1024 * 1024;
+const MAX_VIDEO = 100 * 1024 * 1024;
 
 export async function POST(req: Request) {
   if (!checkAdmin(req)) {
@@ -20,10 +29,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Dosya yok" }, { status: 400 });
     }
     if (!ALLOWED.has(file.type)) {
-      return NextResponse.json({ error: "Sadece JPG/PNG/WebP/GIF" }, { status: 400 });
+      return NextResponse.json({ error: "Sadece JPG/PNG/WebP/GIF/MP4/WebM" }, { status: 400 });
     }
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: "En fazla 5MB" }, { status: 400 });
+    const isVideo = file.type.startsWith("video/");
+    if (file.size > (isVideo ? MAX_VIDEO : MAX_IMAGE)) {
+      return NextResponse.json(
+        { error: isVideo ? "Video en fazla 100MB" : "Görsel en fazla 5MB" },
+        { status: 400 }
+      );
     }
     const base = file.name
       .toLowerCase()
@@ -31,12 +44,23 @@ export async function POST(req: Request) {
       .replace(/[^a-z0-9çğıöşü]+/gi, "-")
       .replace(/^-+|-+$/g, "")
       .slice(0, 40) || "gorsel";
-    const ext = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : file.type === "image/gif" ? "gif" : "jpg";
+    const ext =
+      file.type === "video/mp4"
+        ? "mp4"
+        : file.type === "video/webm"
+          ? "webm"
+          : file.type === "image/png"
+            ? "png"
+            : file.type === "image/webp"
+              ? "webp"
+              : file.type === "image/gif"
+                ? "gif"
+                : "jpg";
     const name = `${Date.now()}-${base}.${ext}`;
     const input = Buffer.from(await file.arrayBuffer());
     let output: Buffer;
-    if (file.type === "image/gif") {
-      // Animasyon bozulmasın diye GIF aynen saklanır
+    if (isVideo || file.type === "image/gif") {
+      // Video ve GIF aynen saklanır (bozulmaması için işlem yok)
       output = input;
     } else {
       const pipeline = sharp(input, { animated: false }).rotate();
