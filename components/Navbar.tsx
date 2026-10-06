@@ -8,7 +8,6 @@ const links = [
   { id: "hizmetler", href: "#hizmetler", label: "Hizmetler" },
   { id: "isler", href: "#isler", label: "İşler" },
   { id: "surec", href: "#surec", label: "Süreç" },
-  { id: "yorumlar", href: "#yorumlar", label: "Referanslar" },
   { id: "teklif", href: "#teklif", label: "Teklif" },
 ];
 

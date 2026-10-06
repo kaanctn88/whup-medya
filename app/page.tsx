@@ -4,7 +4,6 @@ import LogoMarquee from "@/components/LogoMarquee";
 import Services from "@/components/Services";
 import Cases from "@/components/Cases";
 import Process from "@/components/Process";
-import Testimonials from "@/components/Testimonials";
 import QuoteWizard from "@/components/QuoteWizard";
 import CtaBanner from "@/components/CtaBanner";
 import Faq from "@/components/Faq";
@@ -27,7 +26,6 @@ export default async function Home() {
       <Services items={c.services} />
       <Cases items={c.cases} />
       <Process />
-      <Testimonials items={c.testimonials} />
       <QuoteWizard general={c.general} />
       <CtaBanner general={c.general} />
       <Faq />

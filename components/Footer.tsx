@@ -40,7 +40,6 @@ export default function Footer({ general: g }: { general: GeneralContent }) {
           <div className="space-y-2.5 text-[13.5px] text-white/70">
             <a href="#isler" className="block hover:text-white">İşlerimiz</a>
             <a href="#surec" className="block hover:text-white">Süreç</a>
-            <a href="#yorumlar" className="block hover:text-white">Referanslar</a>
             <a href="#teklif" className="block hover:text-white">Teklif Al</a>
           </div>
         </div>
